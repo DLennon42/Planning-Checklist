@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planning Application — Technical Checklist</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #eeecea;
+    --border: #d6d3ca;
+    --border-light: #c4c1b8;
+    --text: #2a2a25;
+    --text-muted: #7a7870;
+    --text-dim: #aaa89f;
+    --accent: #9a7c20;
+    --accent-dim: #c4a84a;
+    --green: #2e7d4f;
+    --green-bg: #e6f4ec;
+    --red: #b0412e;
+    --red-bg: #faeae7;
+    --amber: #a05c20;
+    --section-1: #c8b560;
+    --section-2: #7ab89e;
+    --section-3: #b07ab8;
+    --section-4: #7a9eb8;
+    --section-5: #b8907a;
+    --section-6: #9eb87a;
+    --section-7: #b87a7a;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .masthead {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 2.5rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .masthead-left { flex: 1; min-width: 200px; }
+
+  .masthead-eyebrow {
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.3rem;
+  }
+
+  h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .masthead-sub {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+    letter-spacing: 0.05em;
+  }
+
+  .progress-block { text-align: right; min-width: 160px; }
+
+  .progress-fraction {
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .progress-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+  }
+
+  .progress-bar-track {
+    height: 3px;
+    background: var(--border);
+    margin-top: 0.5rem;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* ── Action bar ── */
+  .action-bar {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 0.6rem 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border: 1px solid var(--border-light);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.primary { border-color: var(--accent-dim); color: var(--accent); }
+  .btn.primary:hover { background: var(--accent); color: var(--bg); }
+
+  .filter-group { display: flex; gap: 0.4rem; margin-left: auto; }
+
+  .filter-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-btn.active, .filter-btn:hover { border-color: var(--accent-dim); color: var(--text); }
+  .filter-btn.f-done.active { border-color: var(--green); color: var(--green); }
+  .filter-btn.f-pending.active { border-color: var(--amber); color: var(--amber); }
+  .filter-btn.f-issue.active { border-color: var(--red); color: var(--red); }
+
+  /* ── Main layout ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: calc(100vh - 130px);
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 0;
+    position: sticky;
+    top: 130px;
+    height: calc(100vh - 130px);
+    overflow-y: auto;
+  }
+
+  .sidebar-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 0 1.2rem 0.5rem;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1.2rem;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+  .nav-item.active { color: var(--text); border-left-color: var(--accent); background: var(--surface2); }
+
+  .nav-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .nav-progress {
+    margin-left: auto;
+    font-size: 0.55rem;
+    color: var(--text-dim);
+  }
+
+  /* ── Content ── */
+  .content {
+    padding: 2rem 2.5rem 4rem;
+    max-width: 900px;
+  }
+
+  /* ── Section ── */
+  .section {
+    margin-bottom: 2.5rem;
+    animation: fadeIn 0.3s ease both;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-number {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    min-width: 24px;
+  }
+
+  .section-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    flex: 1;
+  }
+
+  .section-count {
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Check item ── */
+  .check-item {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    align-items: start;
+    gap: 0.7rem;
+    padding: 0.7rem 0.8rem;
+    margin-bottom: 2px;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+
+  .check-item:hover { background: var(--surface2); border-color: var(--border); }
+
+  .check-item.done { background: var(--green-bg); border-color: #2a3e2e; }
+  .check-item.issue { background: var(--red-bg); border-color: #3e2a26; }
+
+  .check-item.hidden { display: none; }
+
+  .checkbox {
+    width: 16px; height: 16px;
+    border: 1px solid var(--border-light);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: all 0.15s;
+    font-size: 10px;
+    color: transparent;
+  }
+
+  .check-item.done .checkbox {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+  }
+
+  .check-item.issue .checkbox {
+    background: var(--red);
+    border-color: var(--red);
+    color: white;
+  }
+
+  .check-text { flex: 1; }
+
+  .check-label {
+    font-size: 0.75rem;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .check-item.done .check-label { color: var(--text-muted); text-decoration: line-through; text-decoration-color: var(--green); }
+  .check-item.issue .check-label { color: var(--text); }
+
+  .check-sub {
+    font-size: 0.63rem;
+    color: var(--text-dim);
+    margin-top: 0.15rem;
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  .check-item.done .check-sub, .check-item.issue .check-sub { color: var(--text-dim); }
+
+  .status-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+    margin-top: 1px;
+  }
+
+  .check-item:hover .status-btn { border-color: var(--border-light); color: var(--text-muted); }
+  .check-item.done .status-btn { border-color: #2a3e2e; color: var(--green); }
+  .check-item.issue .status-btn { border-color: #3e2a26; color: var(--red); }
+
+  /* ── Note field ── */
+  .note-row {
+    grid-column: 2 / 4;
+    margin-top: 0.3rem;
+  }
+
+  .note-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    padding: 0.35rem 0.5rem;
+    resize: none;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .note-input:focus { border-color: var(--accent-dim); color: var(--text); }
+  .note-input::placeholder { color: var(--text-dim); font-style: italic; }
+
+  /* ── Summary footer ── */
+  .summary-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 0.6rem 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    z-index: 50;
+  }
+
+  .stat { display: flex; align-items: center; gap: 0.5rem; }
+
+  .stat-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  .stat-count { font-size: 0.9rem; font-weight: 500; }
+  .stat-label { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+
+  .print-btn {
+    margin-left: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.8rem;
+    border: 1px solid var(--border-light);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .print-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  @media print {
+    .masthead, .action-bar, .sidebar, .summary-bar { display: none !important; }
+    .layout { grid-template-columns: 1fr; }
+    body { background: white; color: black; }
+    .check-item { border: 1px solid #ccc !important; background: white !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-left">
+    <p class="masthead-eyebrow">Planning & Development Act 2000</p>
+    <h1>Technical Check — Planning Application</h1>
+    <p class="masthead-sub">Manual validation checklist for planning officers / technical reviewers</p>
+  </div>
+  <div class="progress-block">
+    <div class="progress-fraction"><span id="doneCount">0</span>/<span id="totalCount">0</span></div>
+    <div class="progress-label">Items complete</div>
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="progressBar"></div></div>
+  </div>
+</header>
+
+<div class="action-bar">
+  <button class="btn primary" onclick="resetAll()">↺ Reset All</button>
+  <button class="btn" onclick="expandNotes()">+ Show Notes</button>
+  <button class="btn" onclick="collapseNotes()">− Hide Notes</button>
+  <div class="filter-group">
+    <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn f-done" data-filter="done" onclick="setFilter('done',this)">✓ Done</button>
+    <button class="filter-btn f-issue" data-filter="issue" onclick="setFilter('issue',this)">✗ Issue</button>
+    <button class="filter-btn f-pending" data-filter="pending" onclick="setFilter('pending',this)">○ Pending</button>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <main class="content" id="content"></main>
+</div>
+
+<div class="summary-bar">
+  <div class="stat">
+    <div class="stat-dot" style="background:var(--green)"></div>
+    <span class="stat-count" id="statDone" style="color:var(--green)">0</span>
+    <span class="stat-label">Passed</span>
+  </div>
+  <div class="stat">
+    <div class="stat-dot" style="background:var(--red)"></div>
+    <span class="stat-count" id="statIssue" style="color:var(--red)">0</span>
+    <span class="stat-label">Issues</span>
+  </div>
+  <div class="stat">
+    <div class="stat-dot" style="background:var(--text-dim)"></div>
+    <span class="stat-count" id="statPending" style="color:var(--text-muted)">0</span>
+    <span class="stat-label">Pending</span>
+  </div>
+  <button class="print-btn" onclick="window.print()">⎙ Print Report</button>
+</div>
+
+<script>
+const SECTIONS = [
+  {
+    id: 's1', title: 'Application Registration & Validity',
+    color: 'var(--section-1)',
+    items: [
+      { id: 'c1_1', label: 'Application form fully completed', sub: 'All sections of Form No. 1 (or equivalent) signed and dated by applicant or authorised agent' },
+      { id: 'c1_2', label: 'Correct application fee submitted', sub: 'Fee calculated per Planning Regulations Schedule; verify fee type (permission, retention, change of use, etc.)' },
+      { id: 'c1_3', label: 'Date of receipt recorded and within statutory period', sub: 'Receipt date stamped; 8-week decision clock confirmed' },
+      { id: 'c1_4', label: 'Applicant name and address confirmed', sub: 'Matches Land Registry / ownership documentation where applicable' },
+      { id: 'c1_5', label: 'Agent / architect details confirmed', sub: 'Authorisation letter on file if agent acting on behalf of applicant' },
+      { id: 'c1_6', label: 'Site address and Eircode verified', sub: 'Cross-reference against GIS / address database' },
+      { id: 'c1_7', label: 'Application type correctly identified', sub: 'Permission / Retention / Change of Use / Outline / Extension of Duration clearly stated' },
+    ]
+  },
+  {
+    id: 's2', title: 'Public Notice Compliance',
+    color: 'var(--section-2)',
+    items: [
+      { id: 'c2_1', label: 'Site notice erected and confirmed', sub: 'Notice on durable material, min. 600×800mm, positioned at or near main entrance, legible from public road' },
+      { id: 'c2_2', label: 'Site notice content correct', sub: 'Includes applicant name, site address, description of development, statement of right to inspect and make submissions' },
+      { id: 'c2_3', label: 'Newspaper notice published in approved newspaper', sub: 'Published in newspaper circulating in the area; verify newspaper title and date' },
+      { id: 'c2_4', label: 'Newspaper notice content correct', sub: 'Matches planning regulations requirements: applicant name, address, description, right to inspect and submit' },
+      { id: 'c2_5', label: 'Newspaper notice published within correct timeframe', sub: 'Published not more than 2 weeks before application; copy of newspaper page submitted' },
+      { id: 'c2_6', label: 'Submission period confirmed open', sub: '5-week public participation period running from receipt; submissions accepted from any person' },
+    ]
+  },
+  {
+    id: 's3', title: 'Plans, Drawings & Documents',
+    color: 'var(--section-3)',
+    items: [
+      { id: 'c3_1', label: 'Site location map submitted at 1:1000 or 1:2500', sub: 'OS-based, showing site outlined in red; adjoining land owned by applicant outlined in blue' },
+      { id: 'c3_2', label: 'Site layout / block plan submitted', sub: 'Shows proposed development in context of site boundaries, adjacent buildings and roads' },
+      { id: 'c3_3', label: 'Floor plans submitted (existing and proposed)', sub: 'All levels shown; existing clearly distinguished from proposed; north point included' },
+      { id: 'c3_4', label: 'Elevations submitted (all affected elevations)', sub: 'All four elevations shown where applicable; existing and proposed clearly labelled; ground level shown' },
+      { id: 'c3_5', label: 'Sections submitted where required', sub: 'Cross-sections through building and site to establish levels, heights and relationship to boundaries' },
+      { id: 'c3_6', label: 'Roof plan submitted', sub: 'Shows roof form, ridge heights, materials and rainwater goods' },
+      { id: 'c3_7', label: 'Schedule of areas provided', sub: 'GFA, NFA, room areas tabulated; existing and proposed clearly stated' },
+      { id: 'c3_8', label: 'Drawings at appropriate scale and legibility', sub: 'Standard scales used: 1:100, 1:200, 1:500; drawings print-legible at submitted size' },
+      { id: 'c3_9', label: 'Drawing revision status confirmed', sub: 'Revision number, date and author noted on each drawing sheet; title blocks complete' },
+      { id: 'c3_10', label: 'All drawings signed by architect / agent', sub: 'Professional qualification and registration number shown where required (RIAI / Engineers Ireland)' },
+    ]
+  },
+  {
+    id: 's4', title: 'Planning Policy & Development Plan',
+    color: 'var(--section-4)',
+    items: [
+      { id: 'c4_1', label: 'Land use zoning confirmed and noted', sub: 'Check current Development Plan zoning; confirm proposed use is permitted / open for consideration' },
+      { id: 'c4_2', label: 'Compliance with development plan standards assessed', sub: 'Height, plot ratio, site coverage, setbacks, car parking, landscaping checked against Development Plan' },
+      { id: 'c4_3', label: 'Protected structure status checked', sub: 'Confirm if site is on Record of Protected Structures (RPS); if so, additional requirements apply (Part IV PDA 2000)' },
+      { id: 'c4_4', label: 'Architectural Conservation Area (ACA) status checked', sub: 'Confirm if site falls within ACA; character assessment and material compliance required' },
+      { id: 'c4_5', label: 'Natural heritage designations checked', sub: 'SAC, SPA, NHA, pNHA, Natura 2000 sites within or adjoining; AA Screening required where applicable' },
+      { id: 'c4_6', label: 'Flood risk zone confirmed', sub: 'OPW CFRAM/floodinfo.ie consulted; Flood Zone A/B/C determination noted; FRA required if Zones A/B' },
+      { id: 'c4_7', label: 'Strategic Development Zone (SDZ) applicability checked', sub: 'Confirm if site falls within an SDZ planning scheme' },
+      { id: 'c4_8', label: 'Consistency with national / regional planning policy checked', sub: 'NPF, RSES and relevant sectoral guidelines reviewed for consistency' },
+    ]
+  },
+  {
+    id: 's5', title: 'Technical Standards & Building Regulations',
+    color: 'var(--section-5)',
+    items: [
+      { id: 'c5_1', label: 'Building height compliant with zoning standards', sub: 'Ridge / eave / parapet heights measured from finished ground level; checked against Development Plan maximums' },
+      { id: 'c5_2', label: 'Floor area and plot ratio calculated and checked', sub: 'GFA calculated; plot ratio and site coverage expressed as percentage; within zoning limits' },
+      { id: 'c5_3', label: 'Car and bicycle parking provision checked', sub: 'Spaces calculated per Development Plan standards; accessible parking included; cycle parking shown' },
+      { id: 'c5_4', label: 'Boundary setbacks and distances to boundaries checked', sub: 'Measured to all boundaries; overlooking, overshadowing and right-to-light considerations assessed' },
+      { id: 'c5_5', label: 'Daylight / sunlight assessment (if required)', sub: 'BRE method or equivalent; submitted for major applications, extensions affecting neighbouring amenity' },
+      { id: 'c5_6', label: 'Universal access / disability compliance checked', sub: 'Part M TGD reviewed; step-free access, door widths, accessible WC, signage assessed' },
+      { id: 'c5_7', label: 'Drainage strategy confirmed', sub: 'Foul and surface water drainage shown; SuDS required; connection to public sewer confirmed or Irish Water consultation' },
+      { id: 'c5_8', label: 'Fire safety / means of escape checked (overview)', sub: 'TGD Part B principles checked at planning stage: escape routes, compartmentation, access for fire appliances' },
+      { id: 'c5_9', label: 'Structural concept checked (where required)', sub: 'Structural engineers input noted; Part A TGD compliance noted for significant alterations or new build' },
+      { id: 'c5_10', label: 'Energy performance / Part L compliance noted', sub: 'NZEB requirements for new build; EPBD compliance; BER noted where applicable' },
+    ]
+  },
+  {
+    id: 's6', title: 'Environmental & Supporting Assessments',
+    color: 'var(--section-6)',
+    items: [
+      { id: 'c6_1', label: 'EIA Screening completed (if required)', sub: 'Schedule 5 of PDR; determine if development meets EIA thresholds; document screening decision' },
+      { id: 'c6_2', label: 'Environmental Impact Assessment Report (EIAR) reviewed', sub: 'If EIA required: EIAR submitted, NTS included, all chapters present, alternatives considered' },
+      { id: 'c6_3', label: 'Appropriate Assessment (AA) Screening completed', sub: 'Habitats Directive Article 6 screening for Natura 2000 sites; Natura Impact Statement if required' },
+      { id: 'c6_4', label: 'Flood Risk Assessment submitted and reviewed', sub: 'Sequential and Justification Test applied where in Zones A/B; mitigation and finished floor levels stated' },
+      { id: 'c6_5', label: 'Tree survey / arboricultural report checked', sub: 'Trees on/adjacent to site identified; TPOs noted; retention/removal strategy and root protection areas shown' },
+      { id: 'c6_6', label: 'Archaeological assessment / licence checked', sub: 'Record of Monuments and Places (RMP) consulted; licensed archaeologist report submitted where required' },
+      { id: 'c6_7', label: 'Contaminated land assessment noted', sub: 'Phase 1 desk study / Phase 2 site investigation submitted for brownfield, industrial or former landfill sites' },
+      { id: 'c6_8', label: 'Traffic & Transport Assessment (TTA) reviewed', sub: 'Submitted for developments exceeding TTA thresholds; access, junction capacity and road safety reviewed' },
+    ]
+  },
+  {
+    id: 's7', title: 'Consultation, Third Parties & Decision',
+    color: 'var(--section-7)',
+    items: [
+      { id: 'c7_1', label: 'Statutory consultees identified and notified', sub: 'Irish Water, NTA, TII, ABP (if applicable), HSA, EPA, NPWS, OPW, DAU as relevant to application type' },
+      { id: 'c7_2', label: 'Prescribed bodies notified', sub: 'An Taisce, DAHG (re: archaeology/heritage), regional body, Inland Fisheries Ireland where applicable' },
+      { id: 'c7_3', label: 'Third party submissions reviewed', sub: 'All submissions received within 5-week period logged and considered; summary prepared for planner' },
+      { id: 'c7_4', label: 'Further information request issued (if required)', sub: 'Article 33 FI; clock stops on issue; 6-month period for applicant to respond; issues clearly itemised' },
+      { id: 'c7_5', label: 'Further information response assessed', sub: 'FI response complete; no new significant impacts introduced; re-notification if materially different' },
+      { id: 'c7_6', label: 'Conditions schedule prepared', sub: 'Pre-commencement and ongoing conditions drafted; reasons referenced to planning policy; legally sound' },
+      { id: 'c7_7', label: 'Decision within statutory period', sub: '8-week period from valid receipt (or agreed extension); ABP appeal period 4 weeks from decision date' },
+      { id: 'c7_8', label: 'Decision notification issued to applicant and prescribed bodies', sub: 'Decision letter, conditions and drawings stamped; drawings approved in grant recorded on system' },
+    ]
+  }
+];
+
+// State
+let state = {};
+let currentFilter = 'all';
+let notesVisible = {};
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('planningChecklist');
+    if (saved) state = JSON.parse(saved);
+  } catch(e) { state = {}; }
+}
+
+function saveState() {
+  try { localStorage.setItem('planningChecklist', JSON.stringify(state)); } catch(e) {}
+}
+
+function getItemState(id) { return state[id] || { status: 'pending', note: '' }; }
+
+function cycleStatus(id) {
+  const s = getItemState(id).status;
+  const next = s === 'pending' ? 'done' : s === 'done' ? 'issue' : 'pending';
+  state[id] = { ...getItemState(id), status: next };
+  saveState();
+  updateItem(id);
+  updateStats();
+}
+
+function updateNote(id, val) {
+  state[id] = { ...getItemState(id), note: val };
+  saveState();
+}
+
+function updateItem(id) {
+  const s = getItemState(id);
+  const el = document.querySelector(`[data-item="${id}"]`);
+  if (!el) return;
+  el.classList.remove('done', 'issue');
+  if (s.status === 'done') el.classList.add('done');
+  if (s.status === 'issue') el.classList.add('issue');
+  const cb = el.querySelector('.checkbox');
+  cb.textContent = s.status === 'done' ? '✓' : s.status === 'issue' ? '✗' : '';
+  const sb = el.querySelector('.status-btn');
+  sb.textContent = s.status === 'done' ? '✓ Passed' : s.status === 'issue' ? '✗ Issue' : '○ Check';
+  applyFilter(el, s.status);
+}
+
+function applyFilter(el, status) {
+  if (currentFilter === 'all') { el.classList.remove('hidden'); return; }
+  const match = (currentFilter === 'done' && status === 'done') ||
+                (currentFilter === 'issue' && status === 'issue') ||
+                (currentFilter === 'pending' && status === 'pending');
+  el.classList.toggle('hidden', !match);
+}
+
+function updateStats() {
+  let done = 0, issue = 0, total = 0;
+  SECTIONS.forEach(s => s.items.forEach(item => {
+    total++;
+    const st = getItemState(item.id).status;
+    if (st === 'done') done++;
+    if (st === 'issue') issue++;
+  }));
+  const pending = total - done - issue;
+  document.getElementById('doneCount').textContent = done;
+  document.getElementById('totalCount').textContent = total;
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statIssue').textContent = issue;
+  document.getElementById('statPending').textContent = pending;
+  document.getElementById('progressBar').style.width = `${(done/total)*100}%`;
+
+  // Update sidebar
+  SECTIONS.forEach(sec => {
+    const secDone = sec.items.filter(i => getItemState(i.id).status === 'done').length;
+    const prog = document.getElementById(`nav-prog-${sec.id}`);
+    if (prog) prog.textContent = `${secDone}/${sec.items.length}`;
+  });
+}
+
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  SECTIONS.forEach(sec => {
+    sec.items.forEach(item => {
+      const el = document.querySelector(`[data-item="${item.id}"]`);
+      if (el) applyFilter(el, getItemState(item.id).status);
+    });
+  });
+}
+
+function resetAll() {
+  if (!confirm('Reset all checklist items? This cannot be undone.')) return;
+  state = {};
+  saveState();
+  SECTIONS.forEach(sec => sec.items.forEach(item => updateItem(item.id)));
+  updateStats();
+}
+
+function expandNotes() {
+  document.querySelectorAll('.note-input').forEach(n => {
+    n.closest('.check-item').querySelector('.note-row').style.display = 'block';
+  });
+}
+
+function collapseNotes() {
+  document.querySelectorAll('.note-row').forEach(n => {
+    if (!n.querySelector('.note-input').value) n.style.display = 'none';
+  });
+}
+
+function render() {
+  loadState();
+  const sidebar = document.getElementById('sidebar');
+  const content = document.getElementById('content');
+
+  sidebar.innerHTML = '<p class="sidebar-label">Sections</p>';
+  content.innerHTML = '';
+
+  SECTIONS.forEach((sec, si) => {
+    // Sidebar nav
+    const nav = document.createElement('a');
+    nav.href = `#${sec.id}`;
+    nav.className = 'nav-item';
+    nav.innerHTML = `
+      <span class="nav-dot" style="background:${sec.color}"></span>
+      <span>${sec.title}</span>
+      <span class="nav-progress" id="nav-prog-${sec.id}">0/${sec.items.length}</span>
+    `;
+    sidebar.appendChild(nav);
+
+    // Section
+    const section = document.createElement('div');
+    section.className = 'section';
+    section.id = sec.id;
+    section.style.animationDelay = `${si * 0.04}s`;
+
+    section.innerHTML = `
+      <div class="section-header">
+        <span class="section-number">0${si+1}</span>
+        <span class="section-title" style="color:${sec.color}">${sec.title}</span>
+        <span class="section-count">${sec.items.length} items</span>
+      </div>
+    `;
+
+    sec.items.forEach(item => {
+      const s = getItemState(item.id);
+      const div = document.createElement('div');
+      div.className = `check-item${s.status === 'done' ? ' done' : s.status === 'issue' ? ' issue' : ''}`;
+      div.setAttribute('data-item', item.id);
+
+      div.innerHTML = `
+        <div class="checkbox">${s.status === 'done' ? '✓' : s.status === 'issue' ? '✗' : ''}</div>
+        <div class="check-text">
+          <div class="check-label">${item.label}</div>
+          ${item.sub ? `<div class="check-sub">${item.sub}</div>` : ''}
+          <div class="note-row" style="display:${s.note ? 'block' : 'none'}; margin-top:0.4rem;">
+            <textarea class="note-input" rows="2" placeholder="Add note or reference…">${s.note || ''}</textarea>
+          </div>
+        </div>
+        <button class="status-btn" title="Click to cycle: pending → done → issue">${s.status === 'done' ? '✓ Passed' : s.status === 'issue' ? '✗ Issue' : '○ Check'}</button>
+      `;
+
+      div.querySelector('.checkbox').addEventListener('click', () => cycleStatus(item.id));
+      div.querySelector('.status-btn').addEventListener('click', (e) => { e.stopPropagation(); cycleStatus(item.id); });
+      div.querySelector('.check-label').addEventListener('click', () => {
+        const noteRow = div.querySelector('.note-row');
+        noteRow.style.display = noteRow.style.display === 'none' ? 'block' : 'none';
+      });
+      div.querySelector('.note-input').addEventListener('input', (e) => updateNote(item.id, e.target.value));
+      div.querySelector('.note-input').addEventListener('click', (e) => e.stopPropagation());
+
+      section.appendChild(div);
+    });
+
+    content.appendChild(section);
+  });
+
+  updateStats();
+}
+
+render();
+</script>
+</body>
+</html>
